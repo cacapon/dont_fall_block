@@ -126,12 +126,14 @@ class App():
         if pyxel.frame_count % DEFAULT_FPS == 0:
             self.count_down_timer()
 
-        # マウス左クリックで 右回転()
+        # マウス左クリックで 左回転()
         if pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON):
-            self.count_right_mouth_click += 1
-        # マウス右クリックで 左回転()
-        if pyxel.btnp(pyxel.MOUSE_RIGHT_BUTTON):
+            pyxel.play(0, 8)
             self.count_right_mouth_click -= 1
+        # マウス右クリックで 右回転()
+        if pyxel.btnp(pyxel.MOUSE_RIGHT_BUTTON):
+            pyxel.play(0, 8)
+            self.count_right_mouth_click += 1
         # スペースボタンで固定
         if pyxel.btnp(pyxel.KEY_SPACE):
             self.fix_block()
@@ -163,11 +165,13 @@ class App():
         pyxel.text(85, 20, "     SCORE:{}".format(self.my_score), 7)
         pyxel.text(85, 30, "TIME:{}:{:0=2}".format(self.timer[0], self.timer[1]), 7)
 
-        pyxel.text(85, 50, "SPIN:", 7)
-        pyxel.blt(115, 49, IMAGE_ID0, 40, 0, BLOCK_WH * 2, BLOCK_WH * 2)
-        pyxel.text(85, 70, " FIX:", 7)
-        pyxel.blt(115, 69, IMAGE_ID0, 56, 0, BLOCK_WH * 2, BLOCK_WH * 2)
-        pyxel.text(85, 100, "GIVEUP: Q key", 7)
+        pyxel.text(85, 50, "LEFT_SPIN:", 7)
+        pyxel.blt(85, 60, IMAGE_ID0, 40, 0, BLOCK_WH * 2, BLOCK_WH * 2)
+        pyxel.text(85, 80, "RIGHT_SPIN:", 7)
+        pyxel.blt(85, 90, IMAGE_ID0, 56, 0, BLOCK_WH * 2, BLOCK_WH * 2)
+        pyxel.text(85, 110, "FIX:", 7)
+        pyxel.blt(102, 108, IMAGE_ID0, 72, 0, BLOCK_WH * 2, BLOCK_WH)
+        pyxel.text(85, 130, "GIVEUP: Q key", 7)
 
         # ステージを描画する。
         for itt_h, stage_row in enumerate(self.stage):
