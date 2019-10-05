@@ -69,10 +69,11 @@ class App():
         pyxel.init(WINDOW_W, WINDOW_H, fps=DEFAULT_FPS)    # ウィンドウの幅、高さでpyxelの初期化
         pyxel.load('assets/app.pyxres')    # ブロックの画像を読み込む
 
-        self.game_init()
-
         self.high_score = 0
         self.my_score = 0
+
+        self.game_init()
+
         pyxel.run(self.update, self.draw)
 
     def game_init(self):
@@ -86,6 +87,7 @@ class App():
         self.point_move_block = {'W': 0, 'H': 0}  # $動かせるブロックの位置:[横:int,縦:int] = [0,0]
         self.block_vector = {0: {'W': 0, 'H': 0}, 1: {'W': 4, 'H': 0}, 2: {'W': 4, 'H': 4}, 3: {'W': 0, 'H': 4}}  # これとcount_right_mouth_clickの数値から、画像の向きを取得する
         self.my_block = choice(['Z', 'T', 'O', 'S', 'L', 'I', 'J'])
+        self.high_score_check()
         self.my_score = 0
         self.timer = [2, 0]
         self.timeup = False
@@ -104,7 +106,6 @@ class App():
 
     def update_game_mode(self):
         if self.timeup is True:
-            self.high_score_check()
             self.game_mode = 'GAMEOVER'
             return
 
