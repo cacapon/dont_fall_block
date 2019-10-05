@@ -61,6 +61,8 @@ IMAGE_POINTS = {
     'NONE': {'W': 32, 'H': 8},
 }
 
+GAME_MODE = ['TITLE', 'GAME', 'GAMEOVER']
+
 
 class App():
     def __init__(self):
@@ -84,12 +86,26 @@ class App():
         self.point_move_block = {'W': 0, 'H': 0}  # $動かせるブロックの位置:[横:int,縦:int] = [0,0]
         self.block_vector = {0: {'W': 0, 'H': 0}, 1: {'W': 4, 'H': 0}, 2: {'W': 4, 'H': 4}, 3: {'W': 0, 'H': 4}}  # これとcount_right_mouth_clickの数値から、画像の向きを取得する
         self.my_block = choice(['Z', 'T', 'O', 'S', 'L', 'I', 'J'])
+        self.my_score = 0
         self.timer = [2, 0]
         self.timeup = False
+        self.game_mode = 'TITLE'
 
     def update(self):
-        if self.timeup is True:
+        # タイトル画面
+        if self.game_mode == 'TITLE':
+            self.game_mode = 'GAME'  # TODO:作成中
+        # ゲーム画面
+        if self.game_mode == 'GAME':
+            self.update_game_mode()
+        # ゲームオーバー画面
+        if self.game_mode == 'GAMEOVER':
             self.update_timeup_mode()
+
+    def update_game_mode(self):
+        if self.timeup is True:
+            self.high_score_check()
+            self.game_mode = 'GAMEOVER'
             return
 
         self.point_move_block['W'] = pyxel.mouse_x // BLOCK_WH  # 動作ブロックの動き(横) = ブロックの大きさ * (pyxel.mouse_x // ブロックの大きさ)
@@ -113,13 +129,16 @@ class App():
         # マウス左クリックで 右回転()
         if pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON):
             self.count_right_mouth_click += 1
-        # マウス右クリックで ブロック固定()
+        # マウス右クリックで 左回転()
         if pyxel.btnp(pyxel.MOUSE_RIGHT_BUTTON):
+            self.count_right_mouth_click -= 1
+        # スペースボタンで固定
+        if pyxel.btnp(pyxel.KEY_SPACE):
             self.fix_block()
 
         # キーボードのQボタンでGIVEUP
         if pyxel.btnp(pyxel.KEY_Q):
-            self.timeup = True
+            self.game_mode = 'GAMEOVER'
 
     def update_timeup_mode(self):
         # リセットと終了だけ受け付ける
@@ -132,10 +151,13 @@ class App():
     def draw(self):
         pyxel.cls(0)  # 一回きれいさっぱりに
 
-        if self.timeup is True:
+        if self.game_mode == 'GAMEOVER':
             self.draw_timeup_mode()
-            return
 
+        if self.game_mode == 'GAME':
+            self.draw_game_mode()
+
+    def draw_game_mode(self):
         # スコアの表示
         pyxel.text(85, 10, "HIGH SCORE:{}".format(self.high_score), 7)
         pyxel.text(85, 20, "     SCORE:{}".format(self.my_score), 7)
