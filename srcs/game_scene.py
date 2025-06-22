@@ -46,12 +46,11 @@ class GameScene(BaseScene):
 		return gamemode
 
 	def _set_pos(self):
-		self.pos.x = clampi(
-			pyxel.mouse_x // BLOCK_SIZE.x, 0, STAGE_SIZE.x - BLOCK_SIZE.x
-		)
-		self.pos.y = clampi(
-			pyxel.mouse_y // BLOCK_SIZE.y, 0, STAGE_SIZE.y - BLOCK_SIZE.y
-		)
+		x = pyxel.mouse_x // BLOCK_SIZE.x
+		y = pyxel.mouse_y // BLOCK_SIZE.y
+		print(x,y)
+		self.pos.x = clampi(x, 0, STAGE_SIZE.x)
+		self.pos.y = clampi(y, 0, STAGE_SIZE.y)
 
 	def _count_down_timer(self):
 		if pyxel.frame_count % FPS != 0:
@@ -150,9 +149,9 @@ class GameScene(BaseScene):
 			raise IndexError("fix_block: index out of range")
 		for y, block_row in enumerate(block):
 			for x, block_cell in enumerate(block_row):
-				block_map = IMAGE_MAP.get(block_cell)
-				if block_map == "EMP":
+				if block_cell == "EMP":
 					continue
+				block_map = IMAGE_MAP.get(block_cell)
 				draw_pos = Vector2i((x + self.pos.x) * BLOCK_SIZE.x, (y + self.pos.y) * BLOCK_SIZE.y)
 				pyxel.blt(draw_pos.x, draw_pos.y,
 					IMAGE_ID.BLOCK.value,
