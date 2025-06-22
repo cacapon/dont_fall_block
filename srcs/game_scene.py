@@ -35,7 +35,6 @@ class GameScene(BaseScene):
 		self.my_block_type = choice(BLOCK_TYPE)
 		self.my_block =  BLOCK[self.my_block_type][self.mouse_click_count]
 		self.is_timeup = False
-		self.show_mv_block = True
 
 	def _gen_stage(self):
 		stage =  [self._gen_line() for _ in range(STAGE_SIZE.y)]
@@ -162,10 +161,6 @@ class GameScene(BaseScene):
 				)
 
 	def _draw_move_block(self):
-		if pyxel.frame_count % 15 == 0:
-			self.show_mv_block = not self.show_mv_block
-		if not self.show_mv_block:
-			return
 		for y, block_row in enumerate(self.my_block):
 			for x, block_cell in enumerate(block_row):
 				if block_cell == None:
@@ -173,6 +168,6 @@ class GameScene(BaseScene):
 				block_map = IMAGE_MAP.get(block_cell)
 				draw_pos = Vector2i((x + self.pos.x) * BLOCK_SIZE.x, (y + self.pos.y) * BLOCK_SIZE.y)
 				pyxel.blt(draw_pos.x, draw_pos.y,
-					IMAGE_ID.BLOCK.value,
+					IMAGE_ID.FIX_BLOCK.value,
 					block_map.x, block_map.y, BLOCK_SIZE.x, BLOCK_SIZE.y, 10,
 				)
