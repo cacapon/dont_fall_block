@@ -1,9 +1,28 @@
 from enum import Enum, auto
+from dataclasses import dataclass
 
-WINDOW_W = 150
-WINDOW_H = 200
+@dataclass
+class Vector2:
+    x: float
+    y: float
+
+@dataclass
+class Vector2i:
+    x: int
+    y: int
+
+@dataclass
+class Timer:
+    m: int
+    s: int
+
+WINDOW_SIZE = Vector2i(150, 200)
+BLOCK_SIZE = Vector2i(8,8)
 FPS = 30
 
+class IMAGE_ID(Enum):
+    BLOCK = 0
+    TIMEUP = auto()
 
 class GAMEMODE(Enum):
     Title = auto()
