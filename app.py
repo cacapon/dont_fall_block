@@ -1,3 +1,10 @@
+# title: Don't fall Block
+# author: Takuma Tsubo
+# desc: マウスでテトリミノを配置していくパズルゲームです。
+# site: https://github.com/cacapon/dont_fall_block
+# license: MIT
+# version: 1.0
+
 import pyxel
 from srcs.config import WINDOW_SIZE, FPS, GAMEMODE
 from srcs.title_scene import TitleScene

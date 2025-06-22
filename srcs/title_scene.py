@@ -15,5 +15,5 @@ class TitleScene(BaseScene):
         title_pos = 60
         text_center(WINDOW_SIZE.x // 2, title_pos, "don't", 7)
         text_center(WINDOW_SIZE.x // 2, title_pos + 12, "fall", 7)
-        text_center(WINDOW_SIZE.x // 2, title_pos + 24, "blocks", 7)
+        text_center(WINDOW_SIZE.x // 2, title_pos + 24, "block", 7)
         text_center(WINDOW_SIZE.x // 2, WINDOW_SIZE.y - 24, "PRESS SPACE KEY", 7)
