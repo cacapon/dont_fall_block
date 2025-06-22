@@ -6,7 +6,8 @@ pyxelで作った落ちないテトリスです。
 pyxelに関しては、 [こちら](https://github.com/kitao/pyxel) をご覧ください。
 
 # セットアップ
-このプロジェクトをclone後、以下のコマンドを実行します。
+このプロジェクトをclone後、以下のコマンドを実行するとゲームが始まります。
+
 `poetry run pyxel run app.py`
 
 # 遊び方
