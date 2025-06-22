@@ -9,29 +9,35 @@ class App():
 		pyxel.init(WINDOW_SIZE.x, WINDOW_SIZE.y, fps=FPS)
 		pyxel.load('assets/app.pyxres')
 		self.high_score = 0
-		self.my_score = 0
 		self.game_mode = GAMEMODE.Title
-		self.game_scene = {
-			GAMEMODE.Title: 	TitleScene(),
-			GAMEMODE.Game:		GameScene(),
-			GAMEMODE.Result:	ResultScene(), 
-		}
+		self.current_scene = TitleScene()
 		pyxel.run(self.update, self.draw)
 	
 	def update(self):
-		try:
-			self.game_mode = self.game_scene[self.game_mode].update()
-		except:
-			print("update failed: Invalid game mode:", self.game_mode)
-			self.game_mode = GAMEMODE.Title
+		next_mode = self.current_scene.update()
+		if next_mode != self.game_mode:
+			self._switch_scene(next_mode)
+		self.game_mode = next_mode
+	
+	def _switch_scene(self, next_mode):
+		if next_mode == GAMEMODE.Title:
+			self.current_scene = TitleScene()
+		elif next_mode == GAMEMODE.Game:
+			self.current_scene = GameScene(self.high_score)
+		elif next_mode == GAMEMODE.Result:
+			if hasattr(self.current_scene, "score"):
+				score = self.current_scene.score
+			else:
+				score = 0
+			if hasattr(self.current_scene, "high_score"):
+				self.high_score = self.current_scene.high_score
+			else:
+				high_score = 0
+			self.current_scene = ResultScene(score, self.high_score)
 
 	def draw(self):
 		pyxel.cls(0)
-		try:
-			self.game_scene[self.game_mode].draw()
-		except:
-			print("draw failed: Invalid game mode:", self.game_mode)
-			self.game_mode = GAMEMODE.Title
+		self.current_scene.draw()
 
 if __name__ == '__main__':
 	App()

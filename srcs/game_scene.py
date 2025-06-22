@@ -25,9 +25,9 @@ def clampi(value: int, min_value: int, max_value: int):
 
 
 class GameScene(BaseScene):
-	def __init__(self):
-		self.high_score = 0
-		self.my_score = 0
+	def __init__(self, high_score):
+		self.high_score = high_score
+		self.score = 0
 		self.timer = Timer(1, 0)
 		self.stage = self._gen_stage() 
 		self.mouse_click_count = 0
@@ -126,7 +126,9 @@ class GameScene(BaseScene):
 				self.stage.insert(i, self._gen_line())
 		if rm_count == 0:
 			return
-		self.my_score += 100 * (2 ** (rm_count - 1))
+		self.score += 100 * (2 ** (rm_count - 1))
+		if (self.score > self.high_score):
+			self.high_score = self.score
 		pyxel.play(0, 7)
 
 	def draw(self):
@@ -136,7 +138,7 @@ class GameScene(BaseScene):
 
 	def _draw_score_area(self):
 		pyxel.text(85, 10, "HIGH SCORE:{}".format(self.high_score), 7)
-		pyxel.text(85, 20, "     SCORE:{}".format(self.my_score), 7)
+		pyxel.text(85, 20, "     SCORE:{}".format(self.score), 7)
 		pyxel.text(85, 30, "TIME:{}:{:0=2}".format(self.timer.m, self.timer.s), 7)
 
 		pyxel.text(85, 50, "LEFT_SPIN:", 7)
