@@ -17,7 +17,7 @@ class Timer:
     s: int
 
 WINDOW_SIZE = Vector2i(150, 200)
-BLOCK_SIZE = Vector2i(8,8)
+BLOCK_SIZE = Vector2i(8, 8)
 FPS = 30
 
 class IMAGE_ID(Enum):
