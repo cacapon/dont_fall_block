@@ -22,7 +22,7 @@ FPS = 30
 
 class IMAGE_ID(Enum):
     BLOCK = 0
-    TIMEUP = auto()
+    FIX_BLOCK = 1
 
 class GAMEMODE(Enum):
     Title = auto()
