@@ -1,5 +1,5 @@
 from srcs.base_scene import BaseScene 
-from config import GAMEMODE
+from .config import GAMEMODE
 
 
 class ResultScene(BaseScene):
