@@ -16,7 +16,6 @@ IMAGE_MAP = {
 	"J": Vector2i(24, 0),
 	"WALL": Vector2i(24, 8),
 	None: Vector2i(32, 0),
-	"NONE": Vector2i(32, 8),
 }
 
 
@@ -30,12 +29,25 @@ class GameScene(BaseScene):
 		self.high_score = 0
 		self.my_score = 0
 		self.timer = Timer(1, 0)
-		self.stage = [[None] * (STAGE_SIZE.x + 4) for _ in range(STAGE_SIZE.y + 4)]
+		self.stage = self._gen_stage() 
 		self.mouse_click_count = 0
 		self.pos = Vector2i(0, 0)
 		self.my_block_type = choice(BLOCK_TYPE)
 		self.my_block =  BLOCK[self.my_block_type][self.mouse_click_count]
 		self.is_timeup = False
+		self.show_mv_block = True
+
+	def _gen_stage(self):
+		stage =  [self._gen_line() for _ in range(STAGE_SIZE.y)]
+		for _ in range(4):
+			stage.append(["GUARD"] * STAGE_SIZE.x)
+		return stage
+
+	def _gen_line(self):
+		line = [None] * (STAGE_SIZE.x + 4)
+		for i in range(4):
+			line[STAGE_SIZE.x + i] = "GUARD"
+		return line
 
 	def update(self) -> GAMEMODE:
 		gamemode = GAMEMODE.Game
@@ -105,15 +117,13 @@ class GameScene(BaseScene):
 
 	def _line_remove(self):
 		rm_count = 0
-		score = 0
 		for i, line in enumerate(self.stage):
-			# 初めの列がNoneの場合は領域外なので処理しない
-			if line[0] == None:
-				break
+			if line[0] == "GUARD":
+				continue
 			if None not in line:
 				rm_count += 1
 				self.stage.pop(i)
-				self.stage.insert(0, [None * STAGE_SIZE.x])
+				self.stage.insert(i, self._gen_line())
 		if rm_count == 0:
 			return
 		self.my_score += 100 * (2 ** (rm_count - 1))
@@ -140,7 +150,7 @@ class GameScene(BaseScene):
 	def _draw_stage(self):
 		for y in range(STAGE_SIZE.y):
 			for x in range(STAGE_SIZE.x):
-				if self.stage[y][x] is None:
+				if self.stage[y][x] is None or self.stage[y][x] == "GUARD":
 					block = IMAGE_MAP.get(None)
 				else:
 					block = IMAGE_MAP.get(self.stage[y][x])
@@ -150,6 +160,10 @@ class GameScene(BaseScene):
 				)
 
 	def _draw_move_block(self):
+		if pyxel.frame_count % 15 == 0:
+			self.show_mv_block = not self.show_mv_block
+		if not self.show_mv_block:
+			return
 		for y, block_row in enumerate(self.my_block):
 			for x, block_cell in enumerate(block_row):
 				if block_cell == None:
