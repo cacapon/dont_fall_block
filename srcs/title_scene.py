@@ -1,6 +1,6 @@
 import pyxel
 from srcs.base_scene import BaseScene 
-from .pyxel_utils import text_center
+from .app_utils import text_center
 from .config import GAMEMODE, WINDOW_SIZE
 
 

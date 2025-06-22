@@ -2,6 +2,7 @@ import pyxel
 from random import choice
 from srcs.base_scene import BaseScene
 from .config import GAMEMODE, IMAGE_ID, BLOCK_SIZE, Vector2i, FPS, Timer, BLOCK
+from .app_utils import get_block_size
 
 STAGE_SIZE = Vector2i(10, 20)
 BLOCK_TYPE = ["Z", "T", "O", "S", "L", "I", "J"]
@@ -14,7 +15,7 @@ IMAGE_MAP = {
 	"I": Vector2i(16, 8),
 	"J": Vector2i(24, 0),
 	"WALL": Vector2i(24, 8),
-	"EMP": Vector2i(32, 0),
+	None: Vector2i(32, 0),
 	"NONE": Vector2i(32, 8),
 }
 
@@ -29,10 +30,11 @@ class GameScene(BaseScene):
 		self.high_score = 0
 		self.my_score = 0
 		self.timer = Timer(1, 0)
-		self.stage = [[None] * STAGE_SIZE.x for i in range(STAGE_SIZE.y)]
+		self.stage = [[None] * (STAGE_SIZE.x + 4) for _ in range(STAGE_SIZE.y + 4)]
 		self.mouse_click_count = 0
 		self.pos = Vector2i(0, 0)
-		self.my_block = choice(BLOCK_TYPE)
+		self.my_block_type = choice(BLOCK_TYPE)
+		self.my_block =  BLOCK[self.my_block_type][self.mouse_click_count]
 		self.is_timeup = False
 
 	def update(self) -> GAMEMODE:
@@ -48,9 +50,9 @@ class GameScene(BaseScene):
 	def _set_pos(self):
 		x = pyxel.mouse_x // BLOCK_SIZE.x
 		y = pyxel.mouse_y // BLOCK_SIZE.y
-		print(x,y)
-		self.pos.x = clampi(x, 0, STAGE_SIZE.x)
-		self.pos.y = clampi(y, 0, STAGE_SIZE.y)
+		self.pos.x = clampi(x, 0, STAGE_SIZE.x - get_block_size(self.my_block).x)
+		self.pos.y = clampi(y, 0, STAGE_SIZE.y - get_block_size(self.my_block).y)
+		print(self.pos)
 
 	def _count_down_timer(self):
 		if pyxel.frame_count % FPS != 0:
@@ -67,8 +69,11 @@ class GameScene(BaseScene):
 		if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
 			pyxel.play(0, 8)
 			self.mouse_click_count = (self.mouse_click_count - 1) % 4
+			self.my_block = BLOCK[self.my_block_type][self.mouse_click_count]
 		if pyxel.btnp(pyxel.MOUSE_BUTTON_RIGHT):
+			pyxel.play(0, 8)
 			self.mouse_click_count = (self.mouse_click_count + 1) % 4
+			self.my_block = BLOCK[self.my_block_type][self.mouse_click_count]
 		if pyxel.btnp(pyxel.KEY_SPACE):
 			self._fix_block()
 		if pyxel.btnp(pyxel.KEY_Q):
@@ -76,26 +81,25 @@ class GameScene(BaseScene):
 		return GAMEMODE.Game
 
 	def _fix_block(self):
-		try:
-			block = BLOCK[self.my_block][self.mouse_click_count]
-		except:
-			raise IndexError("fix_block: index out of range")
-		if not self._can_fix(block):
+		if not self._can_fix(self.my_block):
 			pyxel.play(0, 5)
 			return
-		for y in range(len(block)):
-			for x in range(len(block[y])):
-				self.stage[y + self.pos.y][x + self.pos.x] = block[y][x]
+		for y in range(len(self.my_block)):
+			for x in range(len(self.my_block[y])):
+				if self.my_block[y][x] == None:
+					continue
+				self.stage[y + self.pos.y][x + self.pos.x] = self.my_block[y][x]
 		pyxel.play(0, 6)
 		self.mouse_click_count = 0
-		self.my_block = choice(BLOCK_TYPE)
+		self.my_block_type = choice(BLOCK_TYPE)
+		self.my_block = BLOCK[self.my_block_type][self.mouse_click_count]
 
-	def _can_fix(self, block):
+	def _can_fix(self, block:list[list[str | None]]) -> bool:
 		for y in range(len(block)):
 			for x in range(len(block[y])):
 				if block[y][x] is None:
 					continue
-				if self.stage[y + self.pos.y][x + self.pos.x] != None:
+				if self.stage[y + self.pos.y][x + self.pos.x] is not None:
 					return False
 		return True
 
@@ -134,22 +138,21 @@ class GameScene(BaseScene):
 		pyxel.text(85, 130, "GIVEUP: Q key", 7)
 
 	def _draw_stage(self):
-		for y, stage_row in enumerate(self.stage):
-			for x, stage_cell in enumerate(stage_row):
-				block = IMAGE_MAP.get(stage_cell) if stage_cell is not None else IMAGE_MAP.get("EMP")
+		for y in range(STAGE_SIZE.y):
+			for x in range(STAGE_SIZE.x):
+				if self.stage[y][x] is None:
+					block = IMAGE_MAP.get(None)
+				else:
+					block = IMAGE_MAP.get(self.stage[y][x])
 				pyxel.blt(x * BLOCK_SIZE.x, y * BLOCK_SIZE.y,
 					IMAGE_ID.BLOCK.value,
 					block.x, block.y, BLOCK_SIZE.x, BLOCK_SIZE.y, 10,
 				)
 
 	def _draw_move_block(self):
-		try:
-			block = BLOCK[self.my_block][self.mouse_click_count]
-		except:
-			raise IndexError("fix_block: index out of range")
-		for y, block_row in enumerate(block):
+		for y, block_row in enumerate(self.my_block):
 			for x, block_cell in enumerate(block_row):
-				if block_cell == "EMP":
+				if block_cell == None:
 					continue
 				block_map = IMAGE_MAP.get(block_cell)
 				draw_pos = Vector2i((x + self.pos.x) * BLOCK_SIZE.x, (y + self.pos.y) * BLOCK_SIZE.y)
