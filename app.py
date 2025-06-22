@@ -1,12 +1,12 @@
 import pyxel
-from srcs.config import WINDOW_H, WINDOW_W, FPS, GAMEMODE
+from srcs.config import WINDOW_SIZE, FPS, GAMEMODE
 from srcs.title_scene import TitleScene
 from srcs.game_scene import GameScene
 from srcs.result_scene import ResultScene
 
 class App():
 	def __init__(self):
-		pyxel.init(WINDOW_W, WINDOW_H, fps=FPS)
+		pyxel.init(WINDOW_SIZE.x, WINDOW_SIZE.y, fps=FPS)
 		pyxel.load('assets/app.pyxres')
 		self.high_score = 0
 		self.my_score = 0
@@ -22,7 +22,7 @@ class App():
 		try:
 			self.game_mode = self.game_scene[self.game_mode].update()
 		except:
-			print("Invalid game mode:", self.game_mode)
+			print("update failed: Invalid game mode:", self.game_mode)
 			self.game_mode = GAMEMODE.Title
 
 	def draw(self):
@@ -30,5 +30,8 @@ class App():
 		try:
 			self.game_scene[self.game_mode].draw()
 		except:
-			print("Invalid game mode:", self.game_mode)
+			print("draw failed: Invalid game mode:", self.game_mode)
 			self.game_mode = GAMEMODE.Title
+
+if __name__ == '__main__':
+	App()
